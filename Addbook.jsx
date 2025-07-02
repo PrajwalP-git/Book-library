@@ -23,8 +23,25 @@ const Addbook = ({ onBookAdded, editingBook, onBookUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!formData.title || !formData.author || !formData.genre || formData.published_date){
-      alert("All fields are required.");
+   
+    const isGibberish=(text)=>{
+      const trimmed= text.trim();
+      return trimmed.length<3 || !/[aeiou]/i.test(trimmed);
+    };
+
+    const isValidDate=(dateStr)=>{
+      const date= new Date(dateStr);
+      return !isNaN(date.getTime());
+    }
+
+    const {title, author, genre, published_date}= formData;
+    if([title,author,genre].some(isGibberish)){
+      alert("Please enter valid details. Gibberish inputs are not allowed.");
+      return;
+    }
+
+    if(!isValidDate(published_date)){
+      alert("Please enter valid details. Gibberish inputs are not allowed.");
       return;
     }
 
