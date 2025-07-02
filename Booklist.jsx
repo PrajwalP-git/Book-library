@@ -5,6 +5,8 @@ import axios from 'axios';
 const BookList=()=>{
     const[books, setBooks]=useState([]);
     const[editingBook, setEditingBook]=useState(null);
+    const[searchQuery, setSearchQuery]=useState('');
+    const[message, setMessage]=useState('');
 
     useEffect(()=>{
         axios.get('http://127.0.0.1:8000/api/books/')
@@ -19,6 +21,27 @@ const BookList=()=>{
         }
         catch(err){
             console.error("Delete failed:", err);
+        }
+    }
+
+    const handleSearch= async(e)=>{
+        const query=e.target.value;
+        setSearchQuery(query);
+
+        if(query.length<3 || !/[a-zA-Z]{3}/.test(query)){
+            setMessage("Please enter at least 3 alphabetic characters.");
+            setBooks([]);
+            return;
+        }
+
+        try{
+            const res= await axios.get(`http://127.0.0.1:8000/api/books/?q=${query}`);
+            setBooks(res.data);
+            setMessage('');
+        }
+        catch(err){
+            setBooks([]);
+            setMessage(err.response?.data?.error || "Something went wrong");
         }
     }
 
